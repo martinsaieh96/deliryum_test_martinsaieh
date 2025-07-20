@@ -1,0 +1,59 @@
+# Entornos virtuales
+venv/
+.env/
+.venv/
+
+# Archivos Python compilados
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos temporales de sistema/editor
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+
+# Configuración de VSCode y otros IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# Archivos de Jupyter/IPython
+.ipynb_checkpoints
+
+# Archivos y carpetas de resultados temporales/datos generados
+data/
+models/
+results_*.json
+
+# Archivos de test temporales
+test_haar.py
+run_main.sh
+mapa_trayectorias.py
+
+# Archivos de configuración y logs
+*.db
+*.sqlite3
+*.sqlite
+*.pkl
+*.h5
+
+# Archivos grandes/binaries accidentales
+*.mp4
+*.avi
+*.mov
+
+# Docker (aunque no uses ahora)
+Dockerfile
+docker-compose.yml
+
+# Entrenamientos/Checkpoints grandes
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# Otros
+*.DS_Store

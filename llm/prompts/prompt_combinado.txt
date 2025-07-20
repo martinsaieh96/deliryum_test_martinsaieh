@@ -1,0 +1,12 @@
+Ejemplo 1:
+Imagen: Hombre con chaqueta azul, pantalón gris y maleta.
+Descripción estructurada:
+**Género aparente:** Hombre  
+**Parte superior:** Chaqueta azul  
+**Parte inferior:** Pantalón gris  
+**Calzado:** No visible  
+**Objetos visibles:** Maleta gris
+
+Ahora realiza un análisis paso a paso de la imagen usando este mismo formato.
+
+Imagen:

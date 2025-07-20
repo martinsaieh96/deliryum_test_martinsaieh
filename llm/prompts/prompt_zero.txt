@@ -1,0 +1,9 @@
+Ejemplo 1:
+Imagen: Hombre con chaqueta amarilla y mochila.
+Descripción: Hombre, chaqueta amarilla, jeans azules, mochila negra.
+
+Ejemplo 2:
+Imagen: Mujer con vestido rojo y bolso blanco.
+Descripción: Mujer, vestido rojo, bolso blanco pequeño.
+
+Ahora describe a la persona en esta imagen.

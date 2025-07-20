@@ -1,0 +1,17 @@
+opencv-python
+#numpy
+numpy==1.26.4
+ultralytics
+scikit-image
+filterpy
+langchain
+transformers 
+pillow
+sentencepiece
+accelerate
+duckduckgo-search
+faiss-cpu
+insightface
+onnxruntime
+#onnxruntime-gpu==1.16.3
+face_recognition

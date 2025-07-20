@@ -1,0 +1,35 @@
+detector:
+  model_path: "./models/detectors/yolov8n.pt"
+  min_bbox_area: 3136 
+
+tracker_active: "sort"
+
+trackers:
+  sort:
+    max_age: 5
+    min_hits: 3
+    iou_threshold: 0.3
+  bytetrack:
+    track_thresh: 0.5
+    match_thresh: 0.8
+    track_buffer: 30
+
+face_detector_active: "retinaface"
+
+face_detectors:
+  fr_dlib:
+    model: "hog"        # "hog" o "cnn"
+  opencv_haar:
+    scaleFactor: 1.1
+    minNeighbors: 3
+    minSize: [16, 16]
+  retinaface:
+    threshold: 0.9
+
+
+paths:
+  raw_videos: "./data/raw_videos"
+  processed_videos: "./data/processed_videos"
+  faces: "./data/faces"
+  crops: "./data/crops"
+  json: "./data/json"

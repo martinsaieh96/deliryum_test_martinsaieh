@@ -1,0 +1,9 @@
+Analiza la imagen paso a paso:
+
+1. Describe el género aparente de la persona.
+2. Describe la ropa de la parte superior.
+3. Describe la ropa de la parte inferior.
+4. Describe el calzado.
+5. ¿Lleva algún objeto visible? (mochila, bolso, maleta, etc.)
+
+Describe detalladamente cada paso.

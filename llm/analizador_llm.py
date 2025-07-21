@@ -18,7 +18,6 @@ class LlmAnalisis:
         return self._json_data
 
     def _parse_ids(self, imagen_path):
-        # Asume path: ./data/crops/vid1/36_0.jpg
         basename = os.path.basename(imagen_path)
         track_id = int(basename.split('_')[0])
         return track_id

@@ -42,6 +42,21 @@ def run_task(task, video_name):
         with open(f"data/json/llm_output_{video_name}_tid{tid}.txt", "w") as f:
             f.write(respuesta)
 
+    elif task == "analyze_id":
+        track_id = args.track_id or input("Ingresa el track_id de la persona a analizar: ")
+        try:
+            track_id = int(track_id)
+        except:
+            print("[ERROR] track_id inválido")
+            return
+        supervisor = Supervisor(video_name=video_name)
+        respuesta = supervisor.analizar_persona(track_id)
+        print("\n[LLM Supervisor Output]:\n")
+        with open(f"data/json/llm_output_{video_name}_tid{track_id}.txt", "w") as f:
+            f.write(respuesta)
+        print(respuesta)
+
+
     else:
         print(f"[ERROR] Tarea desconocida: {task}")
 
@@ -49,7 +64,7 @@ def run_task(task, video_name):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="Nombre del video a procesar (ej. cam1.mp4). Si no se especifica, se procesan todos.", default=None)
-    parser.add_argument("--task", help="Tarea a realizar: process o postprocess", choices=["detect", "postprocess", "supervisor_llm"], required=True)
+    parser.add_argument("--task", help="Tarea a realizar: process o postprocess", choices=["detect", "postprocess", "supervisor_llm", "analyze_id"], required=True)
 
     args = parser.parse_args()
 

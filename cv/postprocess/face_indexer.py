@@ -7,13 +7,12 @@ from insightface.app import FaceAnalysis
 
 class FaceIndexer:
     def __init__(self, faces_dir: str, video_name: str, dim: int = 512):
-        # Asegura que video_name NO tenga la extensión y usa convención /faces_dir/video_name
         video_name = video_name.replace(".mp4", "")
         self.faces_dir = os.path.join(faces_dir, video_name)
         self.index_path = f"gallery_embeddings_{video_name}.faiss"
         self.label_path = f"labels_{video_name}.pkl"
         self.dim = dim
-        self.face_analyzer = None  # Usaremos FaceAnalysis (no sólo el embedder)
+        self.face_analyzer = None  
 
     def _load_face_analyzer(self):
         if self.face_analyzer is None:
@@ -32,7 +31,6 @@ class FaceIndexer:
         for path in face_paths:
             img = cv2.imread(path)
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            # Si no es 112x112, reescala
             if img_rgb.shape[:2] != (112, 112):
                 img_rgb = cv2.resize(img_rgb, (112, 112))
             emb = self._get_embedding_from_crop(img_rgb)
@@ -62,7 +60,6 @@ class FaceIndexer:
         if faces and hasattr(faces[0], "embedding"):
             emb = faces[0].embedding
             return emb / np.linalg.norm(emb)
-        # Fall-back: intenta extraer embedding directo (necesita un bbox)
         try:
             h, w = img_rgb.shape[:2]
             bbox = np.array([0, 0, w, h])

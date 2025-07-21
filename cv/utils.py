@@ -37,13 +37,12 @@ def get_next_filename(dir_path, base, ext):
 def get_crop_from_bbox(frame, bbox):
     x1, y1, x2, y2 = bbox
     h, w = frame.shape[:2]
-    # Clip a los bordes
     x1, x2 = max(0, x1), min(w, x2)
     y1, y2 = max(0, y1), min(h, y2)
     if x2 > x1 and y2 > y1:
         return frame[y1:y2, x1:x2]
     else:
-        return None  # Bounding box inválido
+        return None  
 
 
 
@@ -94,9 +93,7 @@ def make_gallery_per_person(top_faces_dir, output_dir, size=(8,8), max_width=108
     import os
     from glob import glob
 
-    # Encuentra los IDs de las personas a partir de los nombres de los archivos
     face_imgs_all = sorted(glob(os.path.join(top_faces_dir, "tid*_face*.jpg")))
-    # Ej: tid1_face0_f35.jpg -> tid1
     person_ids = set([os.path.basename(f).split('_')[0] for f in face_imgs_all])
 
     os.makedirs(output_dir, exist_ok=True)

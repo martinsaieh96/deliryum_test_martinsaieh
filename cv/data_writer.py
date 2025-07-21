@@ -9,7 +9,6 @@ class DataWriter:
         self.data = []
 
     def add_frame(self, frame_idx, objects_list):
-        # objects_list = [dict con info de cada objeto]
         self.data.append({
             "frame": frame_idx,
             "objects": objects_list
@@ -30,7 +29,6 @@ class DataWriter:
         Convierte la data frame-wise a person-wise y guarda el JSON por persona.
         Se puede pasar el directorio de top faces/bodies para asociar los paths.
         """
-        # Build dict by track_id
         person_dict = {}
         for entry in self.data:
             frame_idx = entry["frame"]
@@ -47,12 +45,9 @@ class DataWriter:
                 })
                 person["bboxes"].append(bbox)
                 person["frames"].append(frame_idx)
-                # We'll fill velocities and states later!
 
-        # Cálculo de velocidades y estados
         import numpy as np
-        umbral_px = 2.0  # Puedes ajustar este valor
-
+        umbral_px = 2.0 
         for tid, pdata in person_dict.items():
             centroids = [( (x1+x2)//2, (y1+y2)//2 ) for x1,y1,x2,y2 in pdata["bboxes"] ]
             velocities = [0.0]
@@ -64,7 +59,6 @@ class DataWriter:
             pdata["velocities"] = velocities
             pdata["states"] = states
 
-        # Asocia los paths de caras y cuerpos top si se pasan los directorios
         if top_faces_dir and os.path.exists(top_faces_dir):
             for tid in person_dict:
                 faces_paths = sorted([f for f in os.listdir(top_faces_dir) if f.startswith(f"tid{tid}_face")])

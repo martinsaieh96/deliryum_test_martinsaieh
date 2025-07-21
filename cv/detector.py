@@ -12,7 +12,7 @@ class PersonDetector:
         persons = []
         for result in results[0].boxes:
             cls = int(result.cls)
-            if cls == 0:  # Asumiendo clase 0 = persona
+            if cls == 0:  
                 x1, y1, x2, y2 = map(int, result.xyxy[0].tolist())
                 area = (x2 - x1) * (y2 - y1)
                 if area >= self.min_bbox_area:

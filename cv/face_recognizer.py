@@ -30,13 +30,11 @@ class TopFacesManager:
         frames_cache = {}
         for tid, faces in self.faces_dict.items():
             saved_paths[tid] = {"faces": [], "bodies": []}
-            # Guarda las 8 mejores caras
             for i, (score_area, img, frame_idx, bbox_cuerpo) in enumerate(faces[:self.max_faces]):
                 fname = f"tid{tid}_face{i}_f{frame_idx}.jpg"
                 fpath = os.path.join(output_dir_faces, fname)
                 cv2.imwrite(fpath, img[:,:,::-1])
                 saved_paths[tid]["faces"].append(fpath)
-            # Guarda las 3 mejores cuerpos, usando frames y bboxes de las 3 mejores caras
             for i, (score_area, img, frame_idx, bbox_cuerpo) in enumerate(faces[:self.max_bodies]):
                 if bbox_cuerpo is not None:
                     if frame_idx not in frames_cache:

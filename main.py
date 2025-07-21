@@ -32,11 +32,7 @@ def run_task(task, video_name):
             print("[ERROR] Imagen no encontrada.")
             return
 
-        prompt = (
-            f"Resumen de la persona track_id={tid}:\n"
-            f"{json.dumps(datos_persona, indent=2)}\n"
-            f"Rostro encontrado en: {result['matched_face_path']}\n"
-            f"Describe o analiza la persona usando toda esta información."
+        prompt = (''
         )
 
         supervisor = Supervisor()

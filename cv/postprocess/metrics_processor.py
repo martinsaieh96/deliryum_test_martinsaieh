@@ -1,54 +1,48 @@
-# postprocess/metrics_processor.py
-
+import os
 import json
 import numpy as np
 
 class MetricsProcessor:
-    def __init__(self, frames_json_path: str, fps: int = 30, activity_thresh: float = 1.0):
+    def __init__(self, persons_json_path, fps=30, activity_thresh=2.0):
+        self.persons_json_path = persons_json_path
         self.fps = fps
         self.activity_thresh = activity_thresh
-        with open(frames_json_path, "r") as f:
-            self.data = json.load(f)
-        self.persons = {}
-
-    def group_tracks(self):
-        for frame_entry in self.data:
-            frame_idx = frame_entry["frame"]
-            for obj in frame_entry["objects"]:
-                tid = obj["track_id"]
-                bbox = obj["bbox"]
-                detected = obj["detection"]
-                if tid not in self.persons:
-                    self.persons[tid] = []
-                self.persons[tid].append({
-                    "frame": frame_idx,
-                    "bbox": bbox,
-                    "detected": detected
-                })
 
     def compute_metrics(self):
-        self.group_tracks()
-        results = {}
-        for tid, tracks in self.persons.items():
-            frames = [t["frame"] for t in tracks]
-            bboxes = np.array([t["bbox"] for t in tracks])
-            centers = np.array([((b[0] + b[2]) / 2, (b[1] + b[3]) / 2) for b in bboxes])
-            speeds = np.linalg.norm(np.diff(centers, axis=0), axis=1)
-            speeds_per_sec = speeds * self.fps
-            avg_speed = float(np.mean(speeds_per_sec)) if len(speeds_per_sec) else 0
-            active = speeds_per_sec > self.activity_thresh
-            active_frames = int(np.sum(active))
-            inactive_frames = len(frames) - active_frames
-            total_secs = len(frames) / self.fps
+        with open(self.persons_json_path, "r") as f:
+            data = json.load(f)
+        summary = {}
+        for tid, pdata in data.items():
+            frames = pdata.get("frames", [])
+            velocities = pdata.get("velocities", [])
+            states = pdata.get("states", [])
+            bboxes = pdata.get("bboxes", [])
+            faces = pdata.get("faces", [])
+            bodies = pdata.get("bodies", [])
 
-            results[tid] = {
-                "track_id": tid,
-                "avg_speed_px_s": avg_speed,
-                "active_frames": active_frames,
-                "inactive_frames": inactive_frames,
-                "total_time_secs": total_secs,
+            centroids = [((x1 + x2)//2, (y1 + y2)//2) for x1, y1, x2, y2 in bboxes]
+
+            total_frames = len(frames)
+            total_seconds = total_frames / self.fps if self.fps else total_frames
+
+            mean_velocity = float(np.mean(velocities)) if velocities else 0.0
+
+            active_frames = sum([s == "activo" for s in states])
+            inactive_frames = sum([s == "inactivo" for s in states])
+            active_time = active_frames / self.fps if self.fps else active_frames
+            inactive_time = inactive_frames / self.fps if self.fps else inactive_frames
+
+            summary[tid] = {
                 "frames": frames,
-                "trajectory": centers.tolist(),
-                "avg_bbox": np.mean(bboxes, axis=0).tolist() if len(bboxes) else None,
+                "centroids": centroids,
+                "velocities": velocities,
+                "states": states,
+                "faces": faces,
+                "bodies": bodies,
+                "mean_velocity": mean_velocity,
+                "total_time": total_seconds,
+                "active_time": active_time,
+                "inactive_time": inactive_time,
+                "n_appearances": total_frames
             }
-        return results
+        return summary

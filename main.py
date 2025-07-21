@@ -20,20 +20,9 @@ def run_task(task, video_name):
         print(f"[WARNING] No se encontró el archivo JSON para {video_name}: {json_path}")
         return
 
-    pp = PostProcessor(frames_json_path=json_path, video_name=video_name)
-
-    if task == "process":
-        pp.process_metrics()
-
-    elif task == "postprocess":
-        query_path = input("Ruta de imagen para reconocer: ")
-        if not os.path.exists(query_path):
-            print("[ERROR] Imagen no encontrada.")
-            return
-        result = pp.process_with_face_query(query_path)
-        print("\nResultado encontrado:")
-        import json
-        print(json.dumps(result, indent=2))
+    elif args.task == "postprocess_2":
+        pp = PostProcessor(frames_json_path=json_path, video_name=args.video)
+        pp.bulk_postprocess()
 
     else:
         print(f"[ERROR] Tarea desconocida: {task}")
@@ -42,7 +31,7 @@ def run_task(task, video_name):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--video", help="Nombre del video a procesar (ej. cam1.mp4). Si no se especifica, se procesan todos.", default=None)
-    parser.add_argument("--task", help="Tarea a realizar: process o postprocess", choices=["detect","process", "postprocess"], required=True)
+    parser.add_argument("--task", help="Tarea a realizar: process o postprocess", choices=["detect","postprocess_2"], required=True)
     args = parser.parse_args()
 
     raw_video_dir = os.path.join("data", "raw_videos")

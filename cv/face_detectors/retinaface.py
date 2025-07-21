@@ -4,7 +4,7 @@ from .base import BaseFaceDetector
 from insightface.app import FaceAnalysis
 
 class RetinaFaceDetector(BaseFaceDetector):
-    def __init__(self, threshold=0.9, det_size=(640, 640), ctx_id=0):
+    def __init__(self, threshold=0.7, det_size=(640, 640), ctx_id=0):
         self.threshold = threshold
         self.det_size = det_size
         self.ctx_id = ctx_id
@@ -18,9 +18,8 @@ class RetinaFaceDetector(BaseFaceDetector):
         self._init_detector()
 
     def _init_detector(self):
-        self.app = FaceAnalysis(name='buffalo_l')
+        self.app = FaceAnalysis(name='buffalo_sc')
         self.app.prepare(ctx_id=self.ctx_id, det_size=self.det_size)
-        print("[INFO] Providers:", self.app.models['detection'].session.get_providers())
     def _align_face(self, image, landmarks, output_size=(112, 112)):
         landmarks = np.array(landmarks).astype(np.float32)
         if landmarks.shape != (5, 2):
@@ -43,15 +42,19 @@ class RetinaFaceDetector(BaseFaceDetector):
             if score < self.threshold:
                 continue
 
-            bbox = res.bbox.astype(int).tolist()  # [x1, y1, x2, y2]
-            landmarks = res.landmark_2d_5.astype(np.float32)  # (5, 2)
+            bbox = res.bbox.astype(int).tolist()  
+            '''if res.landmark_2d_5 is None:
+                #print(f"[WARN] No hay landmarks para bbox {bbox}, se descarta este rostro.")
+                continue
+            landmarks = res.landmark_2d_5.astype(np.float32) '''
+            print('Si se paso')
 
             face_data = {
                 "bbox": bbox,
                 "conf": float(score),
-                "landmarks": landmarks,
+                "landmarks": 'landmarks',
             }
-            face_data["aligned"] = 'a'#res.crop_affine  
+            face_data["aligned"] = res.crop_affine  
             faces.append(face_data)
         return faces
 

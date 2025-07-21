@@ -24,7 +24,7 @@ face_detectors:
     minNeighbors: 3
     minSize: [16, 16]
   retinaface:
-    threshold: 0.9
+    threshold: 0.7
 
 
 paths:
@@ -33,3 +33,6 @@ paths:
   faces: "./data/faces"
   crops: "./data/crops"
   json: "./data/json"
+  top_faces: data/top_faces
+  top_bodies: data/top_bodies
+  gallery: data/gallery8x8

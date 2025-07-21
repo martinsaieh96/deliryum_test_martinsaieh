@@ -62,10 +62,16 @@ class FaceIndexer:
         if faces and hasattr(faces[0], "embedding"):
             emb = faces[0].embedding
             return emb / np.linalg.norm(emb)
-        # Si no se pudo, sólo loggea y sigue
-        print(f"[WARN] No se pudo extraer embedding con FaceAnalysis.get()")
+        # Fall-back: intenta extraer embedding directo (necesita un bbox)
+        try:
+            h, w = img_rgb.shape[:2]
+            bbox = np.array([0, 0, w, h])
+            emb = face_analyzer.models['recognition'].get(img_rgb, bbox)
+            if emb is not None:
+                return emb / np.linalg.norm(emb)
+        except Exception as e:
+            print(f"[WARN] Error obteniendo embedding directo: {e}")
         return None
-
 
 
 

@@ -1,9 +1,6 @@
 import json
 
 class AgenteJSON:
-    """
-    Consulta y resume información de una persona (track_id) a partir del archivo JSON de detecciones por frame.
-    """
     def __init__(self, json_path):
         self.json_path = json_path
         self.data = self._load_json()
@@ -12,35 +9,29 @@ class AgenteJSON:
         with open(self.json_path, "r") as f:
             return json.load(f)
 
-    def buscar_datos(self, track_id):
-        """
-        track_id: int o str (se castea)
-        Devuelve un resumen con:
-            - frames donde aparece
-            - confianza promedio
-            - primeras y últimas apariciones
-            - lista de bboxes, etc.
-        """
+    def buscar_datos(self, track_id, resumen_simple=True):
         track_id = int(track_id)
         frames_info = []
         for frame_info in self.data:
-            frame = frame_info["frame"]
-            for obj in frame_info["objects"]:
-                if int(obj["track_id"]) == track_id:
-                    frames_info.append({
+            frame = frame_info.get("frame")
+            for obj in frame_info.get("objects", []):
+                if int(obj.get("track_id", -1)) == track_id:
+                    item = {
                         "frame": frame,
-                        "confidence": obj.get("confidence", None),
-                        "bbox": obj.get("bbox", None),
-                        "crop_path": obj.get("crop_path", None)
-                    })
+                        "confidence": obj.get("confidence"),
+                        "bbox": obj.get("bbox"),
+                        "crop_path": obj.get("crop_path"),
+                        "centroid": self._bbox_to_centroid(obj.get("bbox")),
+                    }
+                    frames_info.append(item)
         if not frames_info:
             return {"error": f"No se encontró el track_id {track_id} en el JSON"}
 
-        # Estadísticas útiles
         frames_presentes = [fi["frame"] for fi in frames_info]
         confs = [fi["confidence"] for fi in frames_info if fi["confidence"] is not None]
         bboxes = [fi["bbox"] for fi in frames_info]
         crops = [fi["crop_path"] for fi in frames_info]
+        centroids = [fi["centroid"] for fi in frames_info if fi["centroid"] is not None]
 
         resumen = {
             "track_id": track_id,
@@ -51,5 +42,20 @@ class AgenteJSON:
             "confianza_promedio": round(sum(confs) / len(confs), 3) if confs else None,
             "bboxes": bboxes,
             "crops": crops,
+            "centroids": centroids,
         }
-        return resumen
+        if resumen_simple:
+            return resumen
+        else:
+            return {
+                "resumen": resumen,
+                "detalles": frames_info
+            }
+
+    def _bbox_to_centroid(self, bbox):
+        if bbox and len(bbox) == 4:
+            x1, y1, x2, y2 = bbox
+            cx = (x1 + x2) // 2
+            cy = (y1 + y2) // 2
+            return [cx, cy]
+        return None

@@ -43,6 +43,8 @@ data/
 │   └── tu_video.mp4
 ├── json/
 ├── crops/
+├── faces/
+├── bodies/
 ├── top_faces/
 ├── top_bodies/
 └── search/
@@ -52,7 +54,7 @@ data/
 ```
 
 - **raw\_videos:** Coloca aquí los videos `.mp4` que deseas analizar.
-- **search/{nombre\_video}/queries:** Coloca aquí las imágenes de rostro que deseas buscar dentro del video procesado.
+- **search/{nombre\_video}/queries:** Coloca aquí las imágenes de rostro que deseas buscar dentro del video procesado. (Al procesar el video se guarda una carpeta con todas las caras en faces, para poder testear la busqueda mas facil, se pueden copiar imagenes de aqui a la carpeta de queries, ya que el embedding se realiza sobre la carpeta top_faces)
 
 ### 🖥️ Ejecución del Script
 

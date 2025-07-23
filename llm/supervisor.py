@@ -1,7 +1,8 @@
 import os
 import json
 from langchain.agents import initialize_agent, AgentType
-from langchain_community.chat_models import ChatHuggingFace
+from langchain_community.llms import HuggingFacePipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from llm.tools.herramienta_descripcion import (
     herramienta_vestimenta, herramienta_genero, herramienta_objetos
 )
@@ -13,11 +14,17 @@ class Supervisor:
     def __init__(self, video_name):
         self.video_name = video_name.replace(".mp4", "")
         self.json_path = os.path.join("data", "json", f"persons_{video_name}")
-        self.llm = ChatHuggingFace(
-                    model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0",  
-                    temperature=0.2,
-                    max_new_tokens=1024
-                )
+        model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(model_id)
+        pipe = pipeline(
+            "text-generation",
+            model=model,
+            tokenizer=tokenizer,
+            max_new_tokens=1024,
+            temperature=0.2
+        )
+        self.llm = HuggingFacePipeline(pipeline=pipe)
         self.tools = [
             herramienta_vestimenta,
             herramienta_genero,
@@ -32,13 +39,11 @@ class Supervisor:
             verbose=True
         )
 
-    def analizar_persona(self, track_id: int, show_img=True, show_graphs=True):
+    def analizar_persona(self, track_id: int, cuerpo_img_path=None, show_img=True, show_graphs=True):
         agente = AgenteJSON(self.json_path)
         datos_persona = agente.buscar_datos(track_id)
 
-        top_faces_dir = os.path.join("data", "top_faces", self.video_name)
-        representativas = [f for f in os.listdir(top_faces_dir) if f"tid{track_id}_face0" in f and f.endswith(".jpg")]
-        rep_img_path = os.path.join(top_faces_dir, representativas[0]) if representativas else None
+        rep_img_path = cuerpo_img_path
 
         output_viz_dir = os.path.join("data", "json", "visualizations", self.video_name)
         os.makedirs(output_viz_dir, exist_ok=True)
@@ -76,8 +81,8 @@ class Supervisor:
                     [RESUMEN ESTRUCTURADO DEL JSON]
                     {json.dumps(datos_persona, indent=2)}
 
-                    [IMAGEN DE ROSTRO MÁS REPRESENTATIVA]
-                    Ruta local: {rep_img_path or '[NO DISPONIBLE]'}
+                    [IMAGEN DE CUERPO COMPLETO PARA ANÁLISIS]
+                     Ruta local: {rep_img_path or '[NO DISPONIBLE]'}
 
                     [IMAGEN DE SEGUIMIENTO/TRAYECTORIA]
                     Ruta local: {traj_path or '[NO DISPONIBLE]'}

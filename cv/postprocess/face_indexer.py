@@ -23,20 +23,38 @@ class FaceIndexer:
 
     def build_index(self):
         print(f"[INFO] Construyendo índice FAISS desde: {self.faces_dir}")
-        face_paths = [os.path.join(self.faces_dir, f) for f in os.listdir(self.faces_dir) if f.lower().endswith(".jpg")]
+        face_paths = [
+            os.path.join(self.faces_dir, f)
+            for f in os.listdir(self.faces_dir)
+            if f.lower().endswith(".jpg")
+        ]
+
         embeddings = []
         labels = []
         face_analyzer = self._load_face_analyzer()
 
         for path in face_paths:
             img = cv2.imread(path)
+            if img is None:
+                continue
+
             img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if img_rgb.shape[:2] != (112, 112):
                 img_rgb = cv2.resize(img_rgb, (112, 112))
+
             emb = self._get_embedding_from_crop(img_rgb)
             if emb is not None:
                 embeddings.append(emb.astype("float32"))
-                tid = int(os.path.basename(path).split("tid")[1].split("_")[0])
+
+                filename = os.path.basename(path)
+                try:
+                    if "tid" in filename:
+                        tid = int(filename.split("tid")[1].split("_")[0])
+                    else:
+                        tid = int(filename.split("_")[0])
+                except Exception as e:
+                    continue
+
                 labels.append((tid, path))
             else:
                 print(f"[WARN] No se pudo extraer embedding de {path}")
@@ -54,21 +72,24 @@ class FaceIndexer:
 
         print(f"[INFO] Índice guardado: {self.index_path} ({len(labels)} rostros)")
 
+
     def _get_embedding_from_crop(self, img_rgb):
-        face_analyzer = self._load_face_analyzer()
-        faces = face_analyzer.get(img_rgb)
-        if faces and hasattr(faces[0], "embedding"):
-            emb = faces[0].embedding
-            return emb / np.linalg.norm(emb)
         try:
-            h, w = img_rgb.shape[:2]
-            bbox = np.array([0, 0, w, h])
-            emb = face_analyzer.models['recognition'].get(img_rgb, bbox)
+            face_analyzer = self._load_face_analyzer()
+
+            if img_rgb.shape[:2] != (112, 112):
+                img_rgb = cv2.resize(img_rgb, (112, 112))
+
+            emb = face_analyzer.models['recognition'].get_feat(img_rgb)
+
             if emb is not None:
                 return emb / np.linalg.norm(emb)
+
         except Exception as e:
-            print(f"[WARN] Error obteniendo embedding directo: {e}")
+            print(f"[ERROR] Error en _get_embedding_from_crop: {e}")
+
         return None
+
 
 
 

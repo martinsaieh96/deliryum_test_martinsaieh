@@ -19,7 +19,7 @@ Este proyecto permite detectar, trackear y analizar personas en videos, generar 
    - Se genera una galería visual (8x8) de las mejores caras por video.
 
 4. **Indexado y Embedding Facial:**  
-   - Los mejores recortes de rostro son procesados con un modelo de embedding (ej: ArcFace, InsightFace).
+   - Los mejores recortes de rostro son procesados con un modelo de embedding
    - Los embeddings se indexan usando FAISS para búsquedas rápidas.
 
 5. **Búsqueda por Imagen (Query by Example):**  
@@ -30,4 +30,73 @@ Este proyecto permite detectar, trackear y analizar personas en videos, generar 
    - Se usa un modelo LLM para generar descripciones automáticas, análisis o sumarización sobre la persona detectada, usando toda la información del pipeline.
 
 ---
+
+## Cómo Ejecutar el Pipeline (`main.py`)
+
+### Estructura Requerida de Directorios
+
+Asegúrate de seguir esta estructura dentro del directorio raíz del proyecto:
+
+```
+data/
+├── raw_videos/
+│   └── tu_video.mp4
+├── json/
+├── crops/
+├── top_faces/
+├── top_bodies/
+└── search/
+    └── tu_video/
+        └── queries/
+            └── rostro_consulta.jpg
+```
+
+- **raw\_videos:** Coloca aquí los videos `.mp4` que deseas analizar.
+- **search/{nombre\_video}/queries:** Coloca aquí las imágenes de rostro que deseas buscar dentro del video procesado.
+
+### 🖥️ Ejecución del Script
+
+Ejecuta el script principal (`main.py`) desde la terminal con las siguientes opciones:
+
+```bash
+python3 main.py --video tu_video.mp4 --task [detect | postprocess]
+```
+
+#### Detalle de las Tareas (`--task`):
+
+- `detect`: Detecta y trackea personas, guarda resultados en `data/json/persons_{nombre_video}.json`.
+
+```bash
+python3 main.py --video tu_video.mp4 --task detect
+```
+
+- `postprocess`: Crea embeddings, indexa rostros y realiza búsqueda por imagen de consulta. Los resultados visuales quedan guardados en `data/search/{nombre_video}/results/`.
+
+```bash
+python3 main.py --video tu_video.mp4 --task postprocess
+```
+
+### Dónde se guardan los Resultados
+
+- **Detecciones y Tracking:** `data/json/persons_{nombre_video}.json`
+- **Rostros y cuerpos:**
+  - Rostros: `data/top_faces/{nombre_video}/`
+  - Cuerpos: `data/top_bodies/{nombre_video}/`
+- **Resultados búsqueda por imagen:**
+
+```
+data/search/{nombre_video}/results/
+└── rostro_consulta/
+    ├── matched_face.jpg
+    ├── matched_body.jpg
+    ├── trajectory.png
+    ├── velocity.png
+    ├── final_visualization.png
+    ├── track_id.txt
+    └── summary.json
+```
+
+---
+
+📌 Asegúrate de instalar previamente todas las dependencias del proyecto indicadas en `requirements.txt`.
 

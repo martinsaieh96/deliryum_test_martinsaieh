@@ -1,18 +1,11 @@
 import torch
 from PIL import Image
-from transformers import AutoProcessor, LlavaForConditionalGeneration
-
+from transformers import BlipProcessor, BlipForConditionalGeneration
 class AgenteDescripcion:
-    def __init__(self, modelo="llava-hf/llava-v1.6-vicuna-13b-hf", device=None):
-        if device is None:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.device = device
-        self.processor = AutoProcessor.from_pretrained(modelo)
-        self.model = LlavaForConditionalGeneration.from_pretrained(
-            modelo,
-            torch_dtype=torch.float16 if "cuda" in device else torch.float32,
-            device_map="auto"
-        )
+    def __init__(self, modelo="Salesforce/blip-image-captioning-large", device=None):
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.processor = BlipProcessor.from_pretrained(modelo)
+        self.model = BlipForConditionalGeneration.from_pretrained(modelo).to(self.device)
 
     def _run(self, imagen_path, prompt):
         imagen = Image.open(imagen_path).convert("RGB")

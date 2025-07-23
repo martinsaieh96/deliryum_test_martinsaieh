@@ -13,7 +13,7 @@ from cv.postprocess.visualization import plot_trajectory_on_frame, plot_velocity
 class Supervisor:
     def __init__(self, video_name):
         self.video_name = video_name.replace(".mp4", "")
-        self.json_path = os.path.join("data", "json", f"persons_{video_name}")
+        self.json_path = os.path.join("data", "json", f"persons_{video_name}.json")
         model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         model = AutoModelForCausalLM.from_pretrained(model_id)

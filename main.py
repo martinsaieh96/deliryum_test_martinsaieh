@@ -60,11 +60,9 @@ def run_task(task, video_name):
                 )
                 os.makedirs(output_dir, exist_ok=True)
 
-                # Guarda el output del LLM
                 with open(os.path.join(output_dir, f"llm_output_tid{track_id}.txt"), "w") as f:
                     f.write(respuesta_llm)
 
-                # (Opcional) Copia también la imagen consulta y el cuerpo detectado para referencia
                 import shutil
                 shutil.copy(os.path.join(query_dir, query_img_name), os.path.join(output_dir, "query_img.jpg"))
                 if matched_body_img and os.path.exists(matched_body_img):

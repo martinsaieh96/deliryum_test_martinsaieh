@@ -59,6 +59,8 @@ mkdir -p data/raw_videos \
          data/crops \
          data/top_faces \
          data/top_bodies \
+         data/faces \
+         data/bodies \
          data/search/tu_video/queries
 ```
 - **raw\_videos:** Coloca aquí los videos `.mp4` que deseas analizar.

@@ -69,21 +69,21 @@ mkdir -p data/raw_videos \
 Ejecuta el script principal (`main.py`) desde la terminal con las siguientes opciones:
 
 ```bash
-python3 main.py --video tu_video.mp4 --task [detect | postprocess]
+python3 main.py --video tu_video.mp4 --task [p1 | p2 | p3]
 ```
 
-#### Detalle de las Tareas (`--task`):
+#### Detalle de las Tareas (`--p1`):
 
-- `detect`: Detecta y trackea personas, guarda resultados en `data/json/persons_{nombre_video}.json`.
+- `p1`: Detecta y trackea personas, guarda resultados en `data/json/persons_{nombre_video}.json`.
 
 ```bash
-python3 main.py --video tu_video.mp4 --task detect
+python3 main.py --video tu_video.mp4 --task p1
 ```
 
-- `postprocess`: Crea embeddings, indexa rostros y realiza búsqueda por imagen de consulta. Los resultados visuales quedan guardados en `data/search/{nombre_video}/results/`.
+- `p2`: Crea embeddings, indexa rostros y realiza búsqueda por imagen de consulta. Los resultados visuales quedan guardados en `data/search/{nombre_video}/results/`, y los videos procesados quedan en `data/processed_videos`
 
 ```bash
-python3 main.py --video tu_video.mp4 --task postprocess
+python3 main.py --video tu_video.mp4 --task p2
 ```
 
 ### Dónde se guardan los Resultados

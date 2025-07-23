@@ -10,47 +10,40 @@ class AgenteJSON:
             return json.load(f)
 
     def buscar_datos(self, track_id, resumen_simple=True):
-        track_id = int(track_id)
-        frames_info = []
-        for frame_info in self.data:
-            frame = frame_info.get("frame")
-            for obj in frame_info.get("objects", []):
-                if int(obj.get("track_id", -1)) == track_id:
-                    item = {
-                        "frame": frame,
-                        "confidence": obj.get("confidence"),
-                        "bbox": obj.get("bbox"),
-                        "crop_path": obj.get("crop_path"),
-                        "centroid": self._bbox_to_centroid(obj.get("bbox")),
-                    }
-                    frames_info.append(item)
-        if not frames_info:
+        track_id = str(track_id)  
+        if track_id not in self.data:
             return {"error": f"No se encontró el track_id {track_id} en el JSON"}
 
-        frames_presentes = [fi["frame"] for fi in frames_info]
-        confs = [fi["confidence"] for fi in frames_info if fi["confidence"] is not None]
-        bboxes = [fi["bbox"] for fi in frames_info]
-        crops = [fi["crop_path"] for fi in frames_info]
-        centroids = [fi["centroid"] for fi in frames_info if fi["centroid"] is not None]
+        persona = self.data[track_id]
+        frames = persona.get("frames", [])
+        bboxes = persona.get("bboxes", [])
+        velocities = persona.get("velocities", [])
+        states = persona.get("states", [])
+        crops = persona.get("faces", [])
+        bodies = persona.get("bodies", [])
+        centroids = [self._bbox_to_centroid(b) for b in bboxes if b]
 
         resumen = {
             "track_id": track_id,
-            "frames_presentes": frames_presentes,
-            "num_frames": len(frames_presentes),
-            "frame_inicio": min(frames_presentes),
-            "frame_fin": max(frames_presentes),
-            "confianza_promedio": round(sum(confs) / len(confs), 3) if confs else None,
+            "frames_presentes": frames,
+            "num_frames": len(frames),
+            "frame_inicio": min(frames) if frames else None,
+            "frame_fin": max(frames) if frames else None,
             "bboxes": bboxes,
             "crops": crops,
+            "bodies": bodies,
             "centroids": centroids,
+            "velocities": velocities,
+            "states": states,
         }
         if resumen_simple:
             return resumen
         else:
             return {
                 "resumen": resumen,
-                "detalles": frames_info
+                "detalles": persona
             }
+
 
     def _bbox_to_centroid(self, bbox):
         if bbox and len(bbox) == 4:

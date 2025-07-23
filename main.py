@@ -3,7 +3,7 @@ import json
 import argparse
 from cv.processor import VideoProcessor
 from cv.postprocess.postprocessor import PostProcessor
-from llm.supervisor import Supervisor
+#from llm.supervisor import Supervisor
 
 def get_video_names(raw_video_dir):
     return [f for f in os.listdir(raw_video_dir) if f.endswith(".mp4")]
@@ -27,7 +27,7 @@ def run_task(task, video_name):
         pp = PostProcessor(frames_json_path=json_path, video_name=args.video)
         pp.bulk_postprocess()
 
-    elif task == "p3":
+    '''elif task == "p3":
         query_dir = os.path.join("data", "search", args.video.replace(".mp4",""), "queries")
         if not os.path.exists(query_dir):
             print(f"[ERROR] No existe la carpeta de queries: {query_dir}")
@@ -74,7 +74,7 @@ def run_task(task, video_name):
                 print(f"[ERROR] Falló procesamiento para {query_img_name}: {e}")
 
     else:
-        print(f"[ERROR] Tarea desconocida: {task}")
+        print(f"[ERROR] Tarea desconocida: {task}")'''
 
 
 if __name__ == "__main__":
